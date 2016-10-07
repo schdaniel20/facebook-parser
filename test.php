@@ -2,9 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-use Cylex\Crawlers\Facebook\DataSource;
-use Cylex\Crawlers\Facebook\Parser;
-use Cylex\Crawlers\Facebook\DataTarget;
+use Cylex\Facebook\Parser\DataSource;
+use Cylex\Facebook\Parser\Parser;
+use Cylex\Facebook\Parser\DataTarget;
 
 //source config
 $source = [
