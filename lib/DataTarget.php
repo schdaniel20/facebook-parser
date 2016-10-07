@@ -123,7 +123,7 @@ class DataTarget {
     protected function createTable()
     {
         $command = "CREATE TABLE IF NOT EXISTS`{$this->table}` (
-                    `ID` int(11) NOT NULL,
+                    `ID` int(11) NOT NULL AUTO_INCREMENT,
                     `FBID` varchar(200) NOT NULL,
                     `LANG` varchar(45) NOT NULL,
                     `SESSIONID` int(11) DEFAULT NULL,
