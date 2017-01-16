@@ -2,6 +2,8 @@
 
 namespace Cylex\Facebook\Parser;
 
+use Cylex\Facebook\Parser\Converter;
+
 class Parser {
     
     protected $data;
@@ -51,9 +53,13 @@ class Parser {
         'Sunday'    => 'sun'
     ];
     
+    protected $converter;
+
+
     public function __construct(int $sessionID)
     {
         $this->sessionID = $sessionID;
+        $this->converter = new Converter();
     }
 
     public function init(array $data, $defaultValue = null)
@@ -62,14 +68,13 @@ class Parser {
         $this->default = $defaultValue;
         $this->firnr = $data['firnr'];
         $this->fbid = $data['fbid'];
-        $this->lang = $data['lang'];
+        $this->lang = $data['lang'];        
     }
     
     protected function get($key, $def = null)
     {
         $path = explode('.', $key);    
-        $value = $this->data;
-
+        $value = $this->data;        
         foreach($path as $p)
         {
             if(array_key_exists($p, $value))
@@ -129,6 +134,11 @@ class Parser {
 
     public function parse()
     { 
+        if(!$this->data)
+        {
+            return null;
+        }
+        
         $store = array();
         
         $store['CITY'] = $this->get('location.city', $this->default);        
@@ -141,8 +151,21 @@ class Parser {
         
         $store['PAGELINK'] = $this->get('link', $this->default);
         $store['FILIAL_NAME'] = $this->get('name', $this->default);
-        $store['PHONE'] = $this->get('phone', $this->default);
+        $store['PHONE'] = $this->converter->createPhoneJson($this->get('phone', $this->default));
+        
+        $store['EMAIL'] = implode("#",$this->get('emails', []));
+        $store['EMAIL'] = $this->converter->creatEmailJson($store['EMAIL']);
+        
         $store['WEB'] = $this->get('website', $this->default);
+        
+        $store['LINKEDIN'] = $this->converter->getSocialMedia($store['WEB'], 'linkedin');
+        $store['TWITTER'] = $this->converter->getSocialMedia($store['WEB'], 'twitter');
+        $store['YOUTUBE'] = $this->converter->getSocialMedia($store['WEB'], 'youtube');
+        $store['FLICKR'] = $this->converter->getSocialMedia($store['WEB'], 'flickr');
+        $store['FOURSQUARE'] = $this->converter->getSocialMedia($store['WEB'], 'foursquare');
+        $store['GOOGLEONE'] = $this->converter->getSocialMedia($store['WEB'], 'google');
+        $store['PINTEREST'] = $this->converter->getSocialMedia($store['WEB'], 'pinterest');            
+        $store['WEB']  = $this->converter->deleteUnusedSocialLinks( $store['WEB'] );
         
         $store['OPENING_HOURS'] = $this->convertOh();
         

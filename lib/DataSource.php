@@ -40,8 +40,8 @@ class DataSource {
         
         if(count($result['result']) > 0) return;
 
-        $command = "UPDATE ".$this->table." set PROCESSED = 2 where processed = 0 and data is not null limit 1000";
-        $data = $this->connection->query($command);
+        //$command = "UPDATE ".$this->table." set PROCESSED = 2 where processed = 0 and SESSIONID =". $this->sessionID ." limit 1000";
+        //$data = $this->connection->query($command);
 
         $result = $this->getResult($key);
     }
@@ -49,24 +49,27 @@ class DataSource {
     protected function getResult($key = 'id')
     {
         $ids = [];
+        
         $result = $this->db->from($this->table)			
-                    ->where('processed')->is(2)
-                    ->andWhere('data')->notNull()
+                    ->where('processed')->is(0)
+                    ->andWhere('sessionId')->is($this->sessionID)
                     ->limit(1000)
                     ->distinct()
                     ->select([
-                     'firnr',
-                     'fbid', 
-                     'data',
-					 'lang',
+                    $key,
+                    'firnr',
+                    'fbid', 
+                    'data',
+                    'lang',
                     ])
-            ->all(function($firnr, $fbid, $data, $lang) use (&$ids, $key){
-                $ids[] = $$key;
-                return [
-                     'firnr' => $firnr,
-                     'fbid' => $fbid, 
-                     'data' => $data,
-					 'lang' => $lang,
+            ->all(function($key,$firnr, $fbid, $data, $lang) use (&$ids){
+                $ids[] = $key;
+                
+                return [    
+                        'firnr'    => $firnr,
+                        'fbid'     => $fbid, 
+                        'data'     => $data,
+                        'lang'     => $lang,
                     ];
             });
         
