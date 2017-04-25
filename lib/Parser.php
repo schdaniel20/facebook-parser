@@ -188,7 +188,7 @@ class Parser {
         $store['TRANSPORT_PARKING'] = $this->fromArray($this->parkings, 'parking');
         
         $categories = $this->get('category_list');
-        $store['CATEGORY'] ='';
+        $store['CATEGORY'] = '';
         
         if($categories)
         {
